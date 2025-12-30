@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> ☕ کافه چوبی </title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        :root {
+            /* iOS Light Mode (Apple Style) */
+            --bg-color: #f2f2f7;
+            --container-bg: rgba(255, 255, 255, 0.7);
+            --item-bg: #ffffff;
+            --text-main: #000000;
+            --text-dim: #3c3c43;
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --accent: #d4a373;
+            --success: #34c759;
+            --insta-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #f09433);
+        }
+
+        .dark-theme {
+            /* iOS Dark Mode */
+            --bg-color: #000000;
+            --container-bg: rgba(28, 28, 30, 0.8);
+            --item-bg: #1c1c1e;
+            --text-main: #ffffff;
+            --text-dim: #ebebf5;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            transition: background-color 0.5s ease;
+            height: 100vh; color: var(--text-main); overflow: hidden; display: flex; flex-direction: column; 
+        }
+
+        header { padding: 50px 20px 10px; text-align: center; }
+        header h1 { font-size: 2.2rem; font-weight: 800; }
+        .slogan { font-size: 0.8rem; color: var(--accent); margin-top: 5px; font-weight: 600; }
+
+        .nav-tabs { 
+            background: var(--container-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            margin: 20px 30px; padding: 4px; border-radius: 12px; display: flex; border: 1px solid var(--glass-border); 
+        }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; border-radius: 8px; font-size: 0.9rem; font-weight: 700; color: var(--text-main); transition: 0.2s; }
+        .tab-btn.active { background: var(--item-bg); box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
+
+        .main-scroll { flex: 1; overflow-y: auto; padding: 0 25px 140px; scrollbar-width: none; }
+        .main-scroll::-webkit-scrollbar { display: none; }
+
+        .item { 
+            background: var(--item-bg); border-radius: 16px; margin-bottom: 10px; padding: 16px 20px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid var(--glass-border); transition: 0.3s;
+        }
+        .item-head { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.95rem; }
+        .item-body { max-height: 0; overflow: hidden; transition: 0.4s; font-size: 0.85rem; color: var(--text-dim); opacity: 0; line-height: 1.6; }
+        .item.open .item-body { max-height: 150px; margin-top: 10px; opacity: 1; border-top: 1px solid var(--glass-border); padding-top: 10px; }
+
+        .insta-link { text-decoration: none; display: block; margin: 30px 0 15px; }
+        .insta-banner {
+            background: var(--insta-gradient); background-size: 400% 400%; animation: gradientMove 8s ease infinite;
+            border-radius: 16px; padding: 18px; text-align: center; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; gap: 10px; color: #fff;
+        }
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .card-container { perspective: 1000px; width: 100%; max-width: 320px; height: 180px; margin: 10px auto 30px; }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-inner.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-front { background: linear-gradient(135deg, #007aff, #0051a8); color: white; }
+        .card-back { background: var(--success); color: white; transform: rotateY(180deg); justify-content: center; align-items: center; font-weight: bold; }
+        .card-num { font-size: 1.2rem; letter-spacing: 2px; text-align: center; direction: ltr; font-weight: 800; }
+
+        .address-box {
+            background: var(--container-bg); border-radius: 16px; border: 1px solid var(--glass-border);
+            padding: 20px; margin-bottom: 20px; text-align: center; font-size: 0.85rem; line-height: 1.7;
+        }
+
+        #callModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--item-bg); width: 85%; max-width: 350px; padding: 35px 20px; border-radius: 25px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .call-btn-big { background: var(--success); color: white; padding: 18px; border-radius: 14px; text-decoration: none; display: block; margin-top: 20px; font-weight: 800; }
+
+        footer { text-align: center; padding: 20px 0 40px; direction: ltr; }
+        .memorial { font-size: 0.7rem; opacity: 0.5; margin-bottom: 8px; direction: rtl; color: var(--text-main); }
+        .dev-credit { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+        .dev-credit a { color: var(--accent); text-decoration: none; margin-left: 4px; }
+
+        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--success); color: white; border: none; font-size: 1.5rem; z-index: 1000; box-shadow: 0 8px 20px rgba(52, 199, 89, 0.3); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>کافه چوبی</h1>
+    <div class="slogan">اصالت در هر جرعه </div>
+</header>
+
+<nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('espresso', this)">بر پایه اسپرسو</button>
+    <button class="tab-btn" onclick="switchTab('damnosh', this)">دمنوش‌ها</button>
+</nav>
+
+<div class="main-scroll">
+    <div id="espresso" class="category-content active">
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>اسپرسو سینگل ☕</span></div><div class="item-body">عصاره خالص و غلیظ قهوه عربیکا و روبوستا.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>اسپرسو دبل ☕☕</span></div><div class="item-body">دو شات عصاره اسپرسو برای انرژی دوچندان.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>آمریکانو 🇺🇸</span></div><div class="item-body">ترکیب کلاسیک اسپرسو با آب داغ؛ تلخ و ملایم.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>آمریکانو عسلی 🍯</span></div><div class="item-body">آمریکانو همراه با شیرینی طبیعی عسل مرغوب.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>کاپوچینو ☁️</span></div><div class="item-body">ترکیب اسپرسو، شیر بخار داده شده و فوم مخملی.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>نسکافه 🥄</span></div><div class="item-body">طعم نوستالژیک قهوه فوری با کیفیت ممتاز.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>کاپوچینو فندق 🌰</span></div><div class="item-body">کاپوچینوی غلیظ با عطر و طعم جذاب فندق.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>هات چاکلت 🍫</span></div><div class="item-body">شکلات داغ غلیظ و خامه‌ای برای لحظات شیرین.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>وایت چاکلت 🤍</span></div><div class="item-body">نوشیدنی ملایم و لذیذ بر پایه شکلات سفید.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>موکا 🍫☕</span></div><div class="item-body">ترکیب جذاب اسپرسو، شیر و سس شکلات غلیظ.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>موکا عسلی 🍯☕</span></div><div class="item-body">موکا کلاسیک تقویت شده با شیرینی طبیعی عسل.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>لته 🥛</span></div><div class="item-body">مقدار زیاد شیر ابریشمی به همراه یک شات اسپرسو.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>وایت موکا 🥥</span></div><div class="item-body">ترکیب رویایی اسپرسو و شکلات سفید.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>فندق ماکیاتو 🥜</span></div><div class="item-body">شیر فوم‌دار با عطر فندق و لایه‌ای از اسپرسو.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>کاپو توت فرنگی 🍓</span></div><div class="item-body">تجربه‌ای جدید از ترکیب قهوه و عطر توت‌فرنگی.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>شیر دارچین عسلی 🪵</span></div><div class="item-body">نوشیدنی گرم، معطر و مقوی بدون کافئین.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>شیر عسل زعفران 🌼</span></div><div class="item-body">ترکیب انرژی‌بخش با زعفران اصیل و عسل.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>لاته زعفران ✨</span></div><div class="item-body">تلفیق مدرن لاته با رایحه سنتی زعفران ایرانی.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>ماسالا اسپرسو 🌶️☕</span></div><div class="item-body">تندی ادویه ماسالا در کنار تلخی یک شات اسپرسو.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>افزودنی عسل 🍯</span></div><div class="item-body">امکان اضافه کردن عسل طبیعی به تمام نوشیدنی‌ها.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>افزودنی فندق/وانیل 🌰🍦</span></div><div class="item-body">شخصی‌سازی طعم با سیروپ‌های درجه یک.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>افزودنی دارچین 🪵</span></div><div class="item-body">پودر دارچین مرغوب برای عطر و گرمای بیشتر.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>شات اضافه اسپرسو ➕</span></div><div class="item-body">افزودن یک شات عصاره اسپرسو به سفارش.</div></div>
+    </div>
+
+    <div id="damnosh" class="category-content" style="display:none;">
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>چای سیاه ☕</span></div><div class="item-body">چای مرغوب و تازه‌دم؛ انتخابی ساده و اصیل.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>چای ترش 🌺</span></div><div class="item-body">نوشیدنی ملس و یاقوتی، سرشار از آنتی‌اکسیدان.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>گل گاوزبان 🌸</span></div><div class="item-body">دم‌نوش آرامش‌بخش سنتی همراه با لیمو و نبات.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>ماسالا 🍵</span></div><div class="item-body">نوشیدنی معطر و تند هندی ترکیب شده با شیر.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>چای کرک ✨</span></div><div class="item-body">چای غلیظ شیردار پخته شده با ادویه‌های گرم.</div></div>
+        <div class="item" onclick="toggleItem(this)"><div class="item-head"><span>چای کرک زعفرانی 🌙</span></div><div class="item-body">نسخه ویژه چای کرک با عطر و رنگ زعفران ناب.</div></div>
+    </div>
+
+    <a href="https://instagram.com/caffeechobi" target="_blank" class="insta-link">
+        <div class="insta-banner">
+            <span>📸</span><span>ما را در اینستاگرام دنبال کنید</span>
+        </div>
+    </a>
+
+    <div class="card-container">
+        <div class="card-inner" id="bluCard" onclick="flipAndCopy('6219861934886374')">
+            <div class="card-front">
+                <div style="font-weight: 900; font-size: 1.4rem; font-style: italic;">blu</div>
+                <div class="card-num">۶۲۱۹ ۸۶۱۹ ۳۴۸۸ ۶۳۷۴</div>
+                <div style="font-size: 0.7rem; display: flex; justify-content: space-between;">
+                    <span>برای کپی لمس کنید</span>
+                    <span>میلاد یار احمدی </span>
+                </div>
+            </div>
+            <div class="card-back">✅ شماره کارت کپی شد</div>
+        </div>
+    </div>
+
+    <div class="address-box">
+        <b style="display: block; margin-bottom: 5px; color: var(--accent);">📍 آدرس کافه</b>
+        کردستان، قروه، خیابان شریعتی، چهار راه بوعلی، نبش بوعلی جنوبی، کافه چوبی
+    </div>
+
+    <footer>
+        <div class="memorial">به یاد صابر راستی‌کردار عزیز</div>
+        <div class="dev-credit">
+            Developed with ❤️ by <a href="https://momalekiii.github.io" target="_blank">Mo</a>
+        </div>
+    </footer>
+</div>
+
+<button class="fab" onclick="toggleModal(true)">📞</button>
+
+<div id="callModal">
+    <div class="modal-content">
+        <h2 style="margin-bottom: 15px; color: var(--text-main);">تماس با کافه چوبی</h2>
+        <p style="font-size: 0.9rem; color: var(--text-dim);">برای سفارش تلفنی در خدمت شما هستیم.</p>
+        <a href="tel:09331791518" class="call-btn-big">📱 تماس مستقیم</a>
+        <span style="margin-top: 20px; display: block; cursor: pointer; color: var(--accent); font-weight: 700;" onclick="toggleModal(false)">برگشت به منو</span>
+    </div>
+</div>
+
+<script>
+    function applyTheme() {
+        const hour = new Date().getHours();
+        const isDarkModeTime = hour >= 18 || hour < 6;
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDarkModeTime || prefersDark) {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    }
+    applyTheme();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.category-content').forEach(c => c.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).style.display = 'block';
+        btn.classList.add('active');
+    }
+
+    function toggleItem(el) {
+        const isOpen = el.classList.contains('open');
+        document.querySelectorAll('.item').forEach(i => i.classList.remove('open'));
+        if(!isOpen) el.classList.add('open');
+    }
+
+    function flipAndCopy(num) {
+        navigator.clipboard.writeText(num);
+        const card = document.getElementById('bluCard');
+        card.classList.add('flipped');
+        setTimeout(() => { card.classList.remove('flipped'); }, 2500);
+    }
+
+    function toggleModal(show) {
+        document.getElementById('callModal').style.display = show ? 'flex' : 'none';
+    }
+</script>
+</body>
+</html>
